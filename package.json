@@ -17,5 +17,9 @@
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/Efreak/node-infobot/issues"
-  }
+  },
+  "dependencies": {
+    "npm": "~1.4.13"
+  },
+  "devDependencies": {}
 }
