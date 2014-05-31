@@ -1,0 +1,21 @@
+{
+  "name": "infobot",
+  "version": "0.0.0",
+  "description": "An infobot module for nodejs",
+  "main": "infobot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Efreak/node-infobot.git"
+  },
+  "keywords": [
+    "infobot"
+  ],
+  "author": "Efreak <nodejsstuff@efreakbnc.net> (http://www.github.com/Efreak)",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/Efreak/node-infobot/issues"
+  }
+}
