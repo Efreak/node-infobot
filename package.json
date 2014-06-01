@@ -19,7 +19,8 @@
     "url": "https://github.com/Efreak/node-infobot/issues"
   },
   "dependencies": {
-    "npm": "~1.4.13"
+    "npm": "~1.3.10",
+    "sqlite3": "~2.2.3"
   },
   "devDependencies": {}
 }
