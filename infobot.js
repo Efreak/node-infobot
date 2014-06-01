@@ -3,18 +3,30 @@ var sqlite3 = require('sqlite3').verbose();
 var InfoBot = function(database, tablename) {
 	this.database = new sqlite3.cached.Database(database);
 	this.tablename = tablename || "infobot";
-	this.database.run("CREATE TABLE IF NOT EXISTS ?1 (word TEXT, definition TEXT, creatorId TEXT, creatorName TEXT, created DATETIME DEFAULT CURRENT_TIMESTAMP, modifierId TEXT, modifierName TEXT, modified DATETIME DEFAULT CURRENT_TIMESTAMP, locked INTEGER)", {1: this.tablename});
+	this.database.run("CREATE TABLE IF NOT EXISTS " + this.tablename + " (word TEXT, definition TEXT, creatorId TEXT, creatorName TEXT, created DATETIME DEFAULT CURRENT_TIMESTAMP, modifierId TEXT, modifierName TEXT, modified DATETIME DEFAULT CURRENT_TIMESTAMP, locked INTEGER)");
 }
 
 InfoBot.prototype.getInfo = function(word) {
 	this.database.get("SELECT rowid AS id, word, definition, creatorId, creatorName, created, modifierId, modifierName, modified, locked FROM "+this.tablename, function(err, row){
-		if(err) { console.log(err.stack()); return null; };
+		if(err) {
+			console.log(err.stack());
+			return "ERR";
+		};
+		console.log(row);
 		return row;
 	});
 }
-						
-InfoBot.prototype.addWord = function(word, definition, userId, userName, returnfailure) {
-	var row = getInfo(word);
+
+InfoBot.prototype.getDefinition = function(word) {
+	this.getInfo(word, function(row){
+		if(row && row.definition)
+			return row.definition;
+		else return "No such definition!";
+	});
+}
+
+InfoBot.prototype.addWord = function(word, definition, userId, userName) {
+	var row = this.getInfo(word);
 	if(row && row.locked=="locked") return "Definition locked!";
 	if(row && row.locked=="unlocked") {
 		if(row) this.database.run("UPDATE " + this.tablename + " SET definition = " + definition + ", modifierId = " + userId + ", modifierName = " + userName + ", modified = + datetime('now') WHERE word = " + word);
@@ -27,29 +39,31 @@ InfoBot.prototype.addWord = function(word, definition, userId, userName, returnf
 }
 
 InfoBot.prototype.lock = function(word) {
-	var row = getInfo(word);
+	var row = this.getInfo(word);
 	if(row) {
-		if(row) this.database.run("UPDATE " + this.tablename + " SET locked = 'locked' WHERE word = " + word);
+		this.database.run("UPDATE " + this.tablename + " SET locked = 'locked' WHERE word = " + word);
 		return "Definition locked";
-	)
+	}
 	return "No such definition";
 }
 
 InfoBot.prototype.unlock = function(word) {
-	var row = getInfo(word);
+	var row = this.getInfo(word);
 	if(row) {
 		if(row) this.database.run("UPDATE " + this.tablename + " SET locked = 'locked' WHERE word = " + word);
 		return "Definition unlocked";
-	)
+	}
 	return "No such definition";
 }
 
 InfoBot.prototype.delWord = function(word) {
-	var row = getInfo(word);
+	var row = this.getInfo(word);
 	if(!row) return "No such definition!"
 	if(row.locked = "locked") return "Definition locked!";
 	if(row && row.locked = "unlocked") {
 		this.database.run("DELETE FROM " + this.tablename + " WHERE word = " + word);
 		return "Definition deleted";
-	)
+	}
 }
+
+exports.InfoBot = InfoBot;
