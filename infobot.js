@@ -1,28 +1,32 @@
 var sqlite3 = require('sqlite3').verbose();
 
 var InfoBot = function(database, tablename) {
-	this.database = new sqlite3.cached.Database(database);
 	this.tablename = tablename || "infobot";
+	this.database = new sqlite3.cached.Database(database);
 	this.database.run("CREATE TABLE IF NOT EXISTS " + this.tablename + " (word TEXT, definition TEXT, creatorId TEXT, creatorName TEXT, created DATETIME DEFAULT CURRENT_TIMESTAMP, modifierId TEXT, modifierName TEXT, modified DATETIME DEFAULT CURRENT_TIMESTAMP, locked INTEGER)");
 }
 
 InfoBot.prototype.getInfo = function(word) {
-	this.database.get("SELECT rowid AS id, word, definition, creatorId, creatorName, created, modifierId, modifierName, modified, locked FROM "+this.tablename, function(err, row){
+	return this.database.get("SELECT rowid AS id, word, definition, creatorId, creatorName, created, modifierId, modifierName, modified, locked FROM "+this.tablename, function(err, row){
 		if(err) {
 			console.log(err.stack());
 			return "ERR";
 		};
-		console.log(row);
+		console.log(JSON.stringify(row));
+		console.log("definition:    "+row.definition);
 		return row;
 	});
 }
 
 InfoBot.prototype.getDefinition = function(word) {
-	this.getInfo(word, function(row){
-		if(row && row.definition)
-			return row.definition;
-		else return "No such definition!";
-	});
+	var row = this.getInfo(word);
+	console.log();
+	console.log("Row");
+	console.log(row);
+	console.log();
+	if(row && row.definition)
+		return row.definition;
+	else return "No such definition!";
 }
 
 InfoBot.prototype.addWord = function(word, definition, userId, userName) {
