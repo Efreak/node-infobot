@@ -7,7 +7,7 @@ var InfoBot = function(database, tablename) {
 }
 
 InfoBot.prototype.getInfo = function(word, callback, errCallback) {
-	this.database.get("SELECT rowid AS id, word, definition, creatorId, creatorName, created, modifierId, modifierName, modified, locked FROM " + this.tablename + " WHERE word = '" + word + "'", function(err, row){
+	this.database.get("SELECT rowid AS id, word, definition, creatorId, creatorName, created, modifierId, modifierName, modified, locked FROM " + this.tablename + " WHERE word = '?'", [word], function(err, row){
 		err ? errCallback(err) : callback(row);
 	});
 }
@@ -28,7 +28,9 @@ InfoBot.prototype.addWord = function(word, definition, userId, userName, callbac
 			}
 
 			if (row.locked == "unlocked") {
-				this.database.run("UPDATE " + this.tablename + " SET definition = '" + definition + "', modifierId = " + userId + ", modifierName = '" + userName + "', modified = + datetime('now') WHERE word = " + word, {}, function (err) {
+				this.database.run("UPDATE " + this.tablename + " SET definition = '?1', modifierId = ?2, modifierName = '?3', modified = + datetime('now') WHERE word = ?4", {
+					1: definition, 2: userId, 3: userName, 4: word
+				}, function (err) {
 					err ? errCallback(err) : callback("updated");
 				});
 			}
@@ -45,7 +47,7 @@ InfoBot.prototype.addWord = function(word, definition, userId, userName, callbac
 InfoBot.prototype.lock = function(word, callback, errCallback) {
 	this.getInfo(word, (function (row) {
 		if (row) {
-			this.database.run("UPDATE " + this.tablename + " SET locked = 'locked' WHERE word = " + word, {}, function (err) {
+			this.database.run("UPDATE " + this.tablename + " SET locked = 'locked' WHERE word = ?1", {1:word}, function (err) {
 				err ? errCallback(err) : callback("locked");
 			});
 			return;
@@ -58,7 +60,7 @@ InfoBot.prototype.lock = function(word, callback, errCallback) {
 InfoBot.prototype.unlock = function(word, callback, errCallback) {
 	this.getInfo(word, (function (row) {
 		if (row) {
-			this.database.run("UPDATE " + this.tablename + " SET locked = 'unlocked' WHERE word = " + word, {}, function (err) {
+			this.database.run("UPDATE " + this.tablename + " SET locked = 'unlocked' WHERE word = ?1", {1: word}, function (err) {
 				err ? errCallback(err) : callback("unlocked");
 			});
 			return;
@@ -81,7 +83,7 @@ InfoBot.prototype.delWord = function(word, callback, errCallback) {
 		}
 
 		if (row.locked == "unlocked") {
-			this.database.run("DELETE FROM " + this.tablename + " WHERE word = " + word, {}, function (err) {
+			this.database.run("DELETE FROM " + this.tablename + " WHERE word = ?1", {1:word}, function (err) {
 				err ? errCallback(err) : callback("deleted");
 			});
 		}
