@@ -23,11 +23,11 @@ InfoBot.prototype.getDefinition = function(word, callback, errCallback) {
 InfoBot.prototype.addWord = function(word, definition, userId, userName, callback, errCallback) {
 	this.getInfo(word, (function (row) {
 		if (row) {
-			if (row.locked == "locked"){
+			if (row.locked == 1){
 				callback("locked");
 			}
 
-			if (row.locked == "unlocked") {
+			if (row.locked == 0) {
 				this.database.run("UPDATE " + this.tablename + " SET definition = '?1', modifierId = ?2, modifierName = '?3', modified = + datetime('now') WHERE word = ?4", {
 					1: definition, 2: userId, 3: userName, 4: word
 				}, function (err) {
@@ -36,7 +36,7 @@ InfoBot.prototype.addWord = function(word, definition, userId, userName, callbac
 			}
 		} else {
 			this.database.run("INSERT INTO " + this.tablename + " VALUES (?1, ?2, ?3, ?4, datetime('now'), ?6, ?7, datetime('now'), ?9)", {
-				1: word, 2: definition, 3: userId, 4: userName, 6: null, 7: null, 8: null, 9: "unlocked"
+				1: word, 2: definition, 3: userId, 4: userName, 6: null, 7: null, 8: null, 9: 0
 			}, function (err) {
 				err ? errCallback(err) : callback("created");
 			});
@@ -77,12 +77,12 @@ InfoBot.prototype.delWord = function(word, callback, errCallback) {
 			return;
 		}
 
-		if (row.locked == "locked") {
+		if (row.locked == 1) {
 			callback("locked");
 			return;
 		}
 
-		if (row.locked == "unlocked") {
+		if (row.locked == 0) {
 			this.database.run("DELETE FROM " + this.tablename + " WHERE word = ?1", {1:word}, function (err) {
 				err ? errCallback(err) : callback("deleted");
 			});
