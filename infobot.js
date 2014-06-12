@@ -35,8 +35,8 @@ InfoBot.prototype.addWord = function(word, definition, userId, userName, callbac
 				});
 			}
 		} else {
-			this.database.run("INSERT INTO " + this.tablename + " VALUES (?1, ?2, ?3, ?4, datetime('now'), ?6, ?7, datetime('now'), ?9)", {
-				1: word, 2: definition, 3: userId, 4: userName, 6: null, 7: null, 8: null, 9: 0
+			this.database.run("INSERT INTO " + this.tablename + " VALUES (?1, ?2, ?3, ?4, datetime('now'), ?6, ?7, datetime('now'), ?8)", {
+				1: word, 2: definition, 3: userId, 4: userName, 6: userId, 7: userName, 8: 0
 			}, function (err) {
 				err ? errCallback(err) : callback("created");
 			});
