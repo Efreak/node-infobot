@@ -3,7 +3,8 @@ var sqlite3 = require('sqlite3').verbose();
 var InfoBot = function(database, tablename) {
 	this.database = new sqlite3.cached.Database(database);
 	this.tablename = tablename || "infobot";
-	this.database.run("CREATE TABLE IF NOT EXISTS " + this.tablename + " (word TEXT, definition TEXT, creatorId TEXT, creatorName TEXT, created DATETIME DEFAULT CURRENT_TIMESTAMP, modifierId TEXT, modifierName TEXT, modified DATETIME DEFAULT CURRENT_TIMESTAMP, locked INTEGER)");
+	var that = this;
+	this.database.on('open', function(){ that.database.run("CREATE TABLE IF NOT EXISTS " + this.tablename + " (word TEXT, definition TEXT, creatorId TEXT, creatorName TEXT, created DATETIME DEFAULT CURRENT_TIMESTAMP, modifierId TEXT, modifierName TEXT, modified DATETIME DEFAULT CURRENT_TIMESTAMP, locked INTEGER)");});
 }
 
 InfoBot.prototype.getInfo = function(word, callback, errCallback) {
