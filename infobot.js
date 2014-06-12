@@ -1,4 +1,4 @@
-var sqlite3 = require('sqlite3');
+var sqlite3 = require('sqlite3').verbose();
 
 var InfoBot = function(database, tablename) {
 	this.database = new sqlite3.cached.Database(database);
